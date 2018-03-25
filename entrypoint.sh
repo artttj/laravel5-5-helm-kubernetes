@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #echo 'start of entrypoint'
-#cd /var/www/fleetcore;
+cd /var/www/fleetcore;
 
 #cp /etc/volumes/fleetcore/.env .env
 
@@ -25,6 +25,7 @@ php artisan db:seed --force;
 php artisan up;
 
 # Run the CMD argument specified in the Dockerfile.
-php-fpm
 
+: >> /var/www/fleetcore/storage/logs/laravel.log && tail -f /var/www/fleetcore/storage/logs/laravel.log &
+php-fpm
 #exec "$@";

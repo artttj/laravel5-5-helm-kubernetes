@@ -93,4 +93,5 @@ EXPOSE 9000
 
 #ENTRYPOINT ["php-fpm"]
 ENTRYPOINT ["./entrypoint.sh"]
+#CMD ["php-fpm"]
 #CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]

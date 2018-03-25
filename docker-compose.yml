@@ -1,0 +1,75 @@
+
+version: '3'
+services:
+### 網頁伺服器的container ##################################
+# web:
+#  image: nginx
+#  dns: 8.8.8.8
+#  ports:
+#    # 使用隨機的port 80
+#    - "80:80"
+#    - "443:443"
+#    - "6001:6001"
+#  volumes:
+#  - ./sites:/var/www/html
+#  - ./etc:/etc/nginx/conf.d
+#  - ./var/log/web:/var/log/nginx
+#  hostname: web
+#  networks:
+#    - dlaravel_net
+
+### PHP-FPM container ##################################
+ php:
+  build:
+    context: ./
+    dockerfile: Dockerfile
+#  network_mode: "service:web"
+#  image: deviny/fpm:7.2.3
+  #image: deviny/fpm:7.1.15
+  #image: deviny/fpm:7.0.28
+  #image: deviny/fpm:5.6.34
+#  volumes:
+#  - ./etc/php:/usr/local/etc/php/conf.d
+#  - ./sites:/var/www/html
+#  - ./etc/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
+  #建立composer cache
+#  - ./etc/cache:/home/dlaravel/.composer/cache
+  #- ./var/log/php:/var/log
+  #- ./etc/supervisor:/etc/supervisor/conf.d
+  #- ./var/log/supervisor:/var/log/supervisor
+  depends_on:
+    - db
+  environment:
+   - TZ=Asia/Taipei
+  networks:
+   - dlaravel_net
+  #- PHP_IDE_CONFIG=serverName=dlaravel
+  #- XDEBUG_CONFIG="remote_host=???? profiler_enable=1"
+  #建立bash_aliases在etc下，可用來自訂dlaravel使用者的環境變數
+  #- ./etc/bash_aliases:/home/dlaravel/.bash_aliases
+
+### 資料庫 container ##################################
+ db:
+  image: mysql:5.7.19
+  hostname: db
+  ports:
+    - "3307:3306"
+#    - "127.0.0.1:3309:3306"
+  volumes:
+#    - ./etc/mysql/my.cnf:/etc/mysql/my.cnf
+    - ./data:/var/lib/mysql
+  environment:
+   - MYSQL_DATABASE=homestead
+   - MYSQL_USER=homestead
+   - MYSQL_PASSWORD=secret
+   - MYSQL_ROOT_PASSWORD=root
+   #- MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD-secret}
+   - MYSQL_ALLOW_EMPTY_PASSWORD= "yes"
+   - TZ=Asia/Taipei
+  networks:
+    - dlaravel_net
+
+######top-level netowks key#######
+networks:
+    dlaravel_net:
+#      driver: bridge

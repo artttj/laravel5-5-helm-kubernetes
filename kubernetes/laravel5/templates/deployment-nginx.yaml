@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "laravel5.fullname" . }}-nginx
+  labels:
+    app: {{ template "laravel5.name" . }}
+    chart: {{ template "laravel5.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.nginxReplicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "laravel5.name" . }}-nginx
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "laravel5.name" . }}-nginx
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-nginx
+          image: "{{ .Values.nginxImage.repository }}:{{ .Values.nginxImage.tag }}"
+          imagePullPolicy: {{ .Values.nginxImage.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.nginxService.internalPort }}
+            - name: https
+              containerPort: 443
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

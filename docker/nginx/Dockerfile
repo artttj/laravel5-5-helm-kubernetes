@@ -1,5 +1,6 @@
 FROM nginx
+ARG PROJECT=laravel5
 RUN  rm -rf /var/www/* && \
-	mkdir -p /var/www/fleetcore
-WORKDIR /var/www/fleetcore
-COPY . /var/www/fleetcore
+	mkdir -p /var/www/${PROJECT}
+WORKDIR /var/www/${PROJECT}
+COPY . /var/www/${PROJECT}

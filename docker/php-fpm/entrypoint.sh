@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-#echo 'start of entrypoint'
-cd /var/www/fleetcore;
+
+PROJECT=laravel5
+cd /var/www/${PROJECT};
 
 #cp /etc/volumes/fleetcore/.env .env
 
@@ -24,8 +25,13 @@ php artisan db:seed --force;
 # The framework is ready.
 php artisan up;
 
-# Run the CMD argument specified in the Dockerfile.
+# Modify the laravel.log to invoke Docker's Copy-on-write to bring the file up to current layer
+: >> /var/www/${PROJECT}/storage/logs/laravel.log
 
-: >> /var/www/fleetcore/storage/logs/laravel.log && tail -f /var/www/fleetcore/storage/logs/laravel.log &
-php-fpm
-#exec "$@";
+# Tail the logs in the background
+tail -f /var/www/${PROJECT}/storage/logs/laravel.log &
+
+# Run the CMD argument specified in the Dockerfile. This ensures php-fpm runs as PID 1
+exec "$@";
+
+

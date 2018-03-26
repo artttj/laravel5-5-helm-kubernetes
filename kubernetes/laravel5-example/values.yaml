@@ -5,7 +5,7 @@ image:
   tag: latest
   pullPolicy: Always
 nginxService:
-  repository: nginx
+  repository: quay.io/eamonkeane/laravel-nginx
   imageTag: latest
   name: nginx
   type: ClusterIP

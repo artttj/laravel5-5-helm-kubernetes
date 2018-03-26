@@ -1,7 +1,0 @@
-ingress:
-  hosts:
-    - staging-api.squareroute.io
-  tls:
-    - secretName: staging-api.squareroute.io
-      hosts:
-        - staging-api.squareroute.io

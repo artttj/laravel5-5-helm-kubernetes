@@ -10,7 +10,7 @@ nginxImage:
   tag: latest
   pullPolicy: Always
 
-phpImage:
+phpfpmImage:
   repository: quay.io/eamonkeane/laravel
   tag: latest
   pullPolicy: Always

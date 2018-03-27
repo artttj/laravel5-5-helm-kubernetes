@@ -25,17 +25,17 @@ phpfpmService:
   port: 9000
 
 ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  enabled: true
+  annotations:
+     kubernetes.io/ingress.class: nginx
+     kubernetes.io/tls-acme: "true"
   path: /
   hosts:
-    - chart-example.local
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+    - laravel2.squareroute.io
+  tls:
+    - secretName: laravel2.squareroute.io
+      hosts:
+        - laravel2.squareroute.io
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

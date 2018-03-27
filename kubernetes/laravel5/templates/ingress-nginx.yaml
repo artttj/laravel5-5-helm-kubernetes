@@ -1,6 +1,6 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "laravel5.fullname" . -}}
-{{- $servicePort := .Values.service.port -}}
+{{- $servicePort := .Values.nginxService.port -}}
 {{- $ingressPath := .Values.ingress.path -}}
 apiVersion: extensions/v1beta1
 kind: Ingress

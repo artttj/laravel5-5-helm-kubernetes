@@ -3,6 +3,13 @@
 use Illuminate\Http\Request;
 
 /*
+ * Force ssl https://laracasts.com/discuss/channels/laravel/mixed-content-issue-content-must-be-served-as-https?page=2
+ */
+if (App::environment('production')) {
+    URL::forceScheme('https');
+}
+
+/*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------

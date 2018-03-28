@@ -75,7 +75,6 @@ RUN chown www-data:www-data /var/www/${PROJECT}/storage/logs/laravel.log
 RUN mkdir -p /var/www/${PROJECT}/storage
 RUN chown -R www-data:www-data /var/www/${PROJECT}/storage
 
-
 EXPOSE 9000
 
 ENTRYPOINT ["./entrypoint.sh"]

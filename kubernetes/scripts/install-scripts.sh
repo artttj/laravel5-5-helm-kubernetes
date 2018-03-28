@@ -6,11 +6,10 @@ kubectl create secret generic --namespace ${namespace} laravel5-env --from-file=
 
 kubectl create secret generic --namespace ${namespace} laravel5-env-seeder --from-file=/Users/Eamon/PhpstormProjects/laravel5-5-example/.env
 
-kubectl apply -f /Users/Eamon/PhpstormProjects/laravel5-5-example/kubernetes/kubernetes-yaml/mysql-pvc.yaml
-
-kubectl apply -f /Users/Eamon/PhpstormProjects/laravel5-5-example/kubernetes/kubernetes-yaml/mysql-pv.yaml
-
-helm install stable/mysql --namespace ${namespace} --name mysql --set persistence.existingClaim="mysql-mysql"
+# When no storage volume dynamic privsioner is available, PV and PVC need to be create separately for the mysql chart
+#kubectl apply -f /Users/Eamon/PhpstormProjects/laravel5-5-example/kubernetes/kubernetes-yaml/mysql-pvc.yaml
+#kubectl apply -f /Users/Eamon/PhpstormProjects/laravel5-5-example/kubernetes/kubernetes-yaml/mysql-pv.yaml
+#helm install stable/mysql --namespace ${namespace} --name mysql --set persistence.existingClaim="mysql-mysql",mysqlRootPassword=imApMsfoDt,mysqlDatabase=homestead
 
 helm install --namespace ${namespace} --name laravel5 kubernetes/helm/laravel5
 

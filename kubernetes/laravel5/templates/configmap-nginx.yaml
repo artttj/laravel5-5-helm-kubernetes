@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   annotations:
     "helm.sh/hook": pre-install,pre-upgrade
-  name: {{ template "laravel5.fullname" . }}-{{ .Release.Version }}-nginx
+  name: {{ template "laravel5.fullname" . }}-{{ .Release.Time.Seconds }}-nginx
   labels:
     app: {{ template "laravel5.name" . }}
     chart: {{ template "laravel5.chart" . }}

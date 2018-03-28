@@ -1,32 +1,64 @@
-# Default values for laravel5.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
+# the number of replicas for the nginx service
 nginxReplicaCount: 1
-phpfpmReplicaCount: 1
+# the number of replicas for the phpfpm service
+phpfpmReplicaCount: 5
 
+# Set this to true to run an initial dumping and seeding of database on initial helm install
 preInstallJob: true
-preUpgradeJob: false
+preInstallCommands:
+# Start artisan in backgrounde mode, then dump database and seed.
+# The .env for the pre-install job is different because it needs to seed local files.
+# The APP_ENV is set to APP_ENV=seeder and the APP_URL is set to: APP_URL=http://localhost:8000
+# which aren't yet available over https at desired url.
+  first: "php /var/www/laravel5/artisan serve &"
+  second: "php /var/www/laravel5/artisan migrate:fresh --force --seed"
 
+# Set this to true to run an migrations before every upgrade
+preUpgradeJob: true
+preUpgradeCommand:
+# Preform migrations
+  first: "php artisan migrate --force"
+
+# The nginx image repository details
 nginxImage:
   repository: quay.io/eamonkeane/laravel-nginx
   tag: latest
   pullPolicy: Always
 
+# The nginx readiness and liveness values
+nginxLivenessProbe:
+  initialDelaySeconds: 60
+  timeoutSeconds: 5
+nginxReadinessProbe:
+  initialDelaySeconds: 60
+  timeoutSeconds: 5
+
+# The phpfpm image repository details
 phpfpmImage:
   repository: quay.io/eamonkeane/laravel
   tag: latest
   pullPolicy: Always
 
+# The phpfpm readiness and liveness values
+phpfpmLivenessProbe:
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+phpfpmReadinessProbe:
+  initialDelaySeconds: 60
+  timeoutSeconds: 5
+
+# The nginx service values
 nginxService:
   type: ClusterIP
   externalPort: 80
   internalPort: 80
 
+# The phpfpm service values
 phpfpmService:
   type: ClusterIP
   port: 9000
 
+# Ingress details
 ingress:
   enabled: true
   annotations:
@@ -35,12 +67,31 @@ ingress:
   path: /
   hosts:
     - laravel2.squareroute.io
+# If enabling ssl please keep in mind the following:
+# The default laravel 5.5 demo project served mixed content (attempting to serve static assets over http), so the following block of code was added to api.php and web.php:
+   # if (App::environment('production')) {
+   #    URL::forceScheme('https');
+   #}
+   # https://laracasts.com/discuss/channels/laravel/mixed-content-issue-content-must-be-served-as-https?page=2
+   # If you are looking to enforce SSL for other environments (such as staging) please modify api.php and web.php to forceScheme for those environments
   tls:
     - secretName: laravel2.squareroute.io
       hosts:
         - laravel2.squareroute.io
 
-resources: {}
+nginxResources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+phpfpmResources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following

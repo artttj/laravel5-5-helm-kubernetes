@@ -38,15 +38,15 @@ spec:
           livenessProbe:
             tcpSocket:
               port: {{ .Values.phpfpmService.port }}
-            initialDelaySeconds: 10
-            timeoutSeconds: 5
+            initialDelaySeconds: {{ .Values.phpfpmLivenessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.phpfpmLivenessProbe.timeoutSeconds }}
           readinessProbe:
             tcpSocket:
               port: {{ .Values.phpfpmService.port }}
-            initialDelaySeconds: 60
-            timeoutSeconds: 5
+            initialDelaySeconds: {{ .Values.phpfpmReadinessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.phpfpmReadinessProbe.timeoutSeconds }}
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.phpfpmResources | indent 12 }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

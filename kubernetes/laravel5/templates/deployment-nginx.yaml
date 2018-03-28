@@ -24,13 +24,13 @@ spec:
       volumes:
         - name: nginx-conf
           configMap:
-            name: {{ template "laravel5.fullname" . }}-{{ .Release.Version }}-nginx
+            name: {{ template "laravel5.fullname" . }}-{{ .Release.Time.Seconds }}-nginx
             items:
             - key: nginx.conf
               path: nginx.conf
         - name: laravel-conf
           configMap:
-            name: {{ template "laravel5.fullname" . }}-{{ .Release.Version }}-nginx
+            name: {{ template "laravel5.fullname" . }}-{{ .Release.Time.Seconds }}-nginx
             items:
             - key: laravel-site.conf
               path: laravel-site.conf
@@ -53,16 +53,16 @@ spec:
             httpGet:
               path: /
               port: http
-            initialDelaySeconds: 10
-            timeoutSeconds: 5
+            initialDelaySeconds: {{ .Values.nginxLivenessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.nginxLivenessProbe.timeoutSeconds }}
           readinessProbe:
             httpGet:
               path: /
               port: http
-            initialDelaySeconds: 60
-            timeoutSeconds: 5
+            initialDelaySeconds: {{ .Values.nginxReadinessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.nginxReadinessProbe.timeoutSeconds }}
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.nginxResources | indent 12 }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

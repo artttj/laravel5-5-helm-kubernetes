@@ -1,0 +1,63 @@
+{{- if .Values.preUpgradeJob -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ template "laravel5.fullname" . }}-pre-upgrade-job-{{ .Release.Time.Seconds }}"
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+  labels:
+    app: {{ template "laravel5.name" . }}-nginx
+    chart: {{ template "laravel5.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: laravel5-env
+          secret:
+            secretName: laravel5-env
+      containers:
+        - name: {{ .Chart.Name }}-phpfpm
+          image: "{{ .Values.phpfpmImage.repository }}:{{ .Values.phpfpmImage.tag }}"
+          imagePullPolicy: {{ .Values.phpfpmImage.pullPolicy }}
+          args: ["php artisan migrate --force"]
+          ports:
+            - name: phpfpm
+              containerPort: {{ .Values.phpfpmService.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: laravel5-env
+              mountPath: /var/www/laravel5/.env
+              subPath: .env
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.phpfpmService.port }}
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.phpfpmService.port }}
+            initialDelaySeconds: 40
+            timeoutSeconds: 5
+          resources:
+    {{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+    {{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+    {{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+    {{ toYaml . | indent 8 }}
+    {{- end }}
+
+
+{{- end -}}

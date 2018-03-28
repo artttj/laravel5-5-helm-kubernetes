@@ -6,7 +6,7 @@ metadata:
   annotations:
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "-5"
-    "helm.sh/hook-delete-policy": hook-failed, hook-succeeded
+    "helm.sh/hook-delete-policy": hook-succeeded
   labels:
     app: {{ template "laravel5.name" . }}-nginx
     chart: {{ template "laravel5.chart" . }}
@@ -27,8 +27,6 @@ spec:
           imagePullPolicy: {{ .Values.phpfpmImage.pullPolicy }}
           args: ["php /var/www/laravel5/artisan serve &",
                 "php /var/www/laravel5/artisan migrate:fresh --force --seed"]
-#          command: ["/bin/bash", "-c", "sleep 300"]
-#          command: ["/bin/bash", "-c", "php /var/www/laravel5/artisan serve & && php /var/www/laravel5/artisan migrate:fresh --force --seed"]
           ports:
             - name: phpfpm
               containerPort: {{ .Values.phpfpmService.port }}

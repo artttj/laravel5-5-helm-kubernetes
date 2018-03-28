@@ -16,4 +16,4 @@ helm install --namespace default --name laravel5 kubernetes/laravel5 --set phpfp
 
 kubectl patch deployment --namespace default laravel5-phpfpm --patch '{"spec": {"template": {"spec": {"containers": [{"name": "laravel5-phpfpm","image": "quay.io/eamonkeane/laravel:no-artisan"}]}}}}'
 
-helm install --wait --namespace default --name laravel5 kubernetes/laravel5 --set phpfpmImage.tag=entrypoint-seeder
+helm upgrade --install --wait --timeout 400 --namespace default --set phpfpmImage.tag=entrypoint-seeder laravel5 kubernetes/laravel5

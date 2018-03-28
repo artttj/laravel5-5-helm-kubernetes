@@ -5,6 +5,9 @@
 nginxReplicaCount: 1
 phpfpmReplicaCount: 1
 
+preInstallJob: false
+preUpgradeJob: false
+
 nginxImage:
   repository: quay.io/eamonkeane/laravel-nginx
   tag: latest

@@ -19,6 +19,10 @@ spec:
         app: {{ template "laravel5.name" . }}-phpfpm
         release: {{ .Release.Name }}
     spec:
+      volumes:
+        - name: laravel5-env
+          secret:
+            secretName: laravel5-env
       containers:
         - name: {{ .Chart.Name }}-phpfpm
           image: "{{ .Values.phpfpmImage.repository }}:{{ .Values.phpfpmImage.tag }}"
@@ -27,6 +31,10 @@ spec:
             - name: phpfpm
               containerPort: {{ .Values.phpfpmService.port }}
               protocol: TCP
+          volumeMounts:
+            - name: laravel5-env
+              mountPath: /var/www/laravel5/.env
+              subPath: .env
           livenessProbe:
             tcpSocket:
               port: {{ .Values.phpfpmService.port }}

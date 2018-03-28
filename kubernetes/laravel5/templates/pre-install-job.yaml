@@ -1,3 +1,4 @@
+{{- if .Values.preInstallJob -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -17,3 +18,4 @@ spec:
   template:
     metadata:
       name: {{ .Release.Name }}
+{{- end -}}

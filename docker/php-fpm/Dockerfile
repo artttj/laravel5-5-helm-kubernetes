@@ -58,7 +58,10 @@ WORKDIR /var/www/${PROJECT}
 RUN composer install --no-scripts --no-autoloader
 
 COPY . /var/www/${PROJECT}
+#COPY ${DOCKERFILE_DIR}/entrypoint-migrate.sh entrypoint.sh
 COPY ${DOCKERFILE_DIR}/entrypoint.sh entrypoint.sh
+
+RUN chmod +x entrypoint.sh
 
 # Create the Laravel Log file and assign it to www-data:
 RUN mkdir -p /var/www/${PROJECT}/storage/logs

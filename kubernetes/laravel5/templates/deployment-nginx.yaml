@@ -21,6 +21,19 @@ spec:
         app: {{ template "laravel5.name" . }}-nginx
         release: {{ .Release.Name }}
     spec:
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: {{ template "laravel5.fullname" . }}-{{ .Release.Version }}-nginx
+            items:
+            - key: nginx.conf
+              path: nginx.conf
+        - name: laravel-conf
+          configMap:
+            name: {{ template "laravel5.fullname" . }}-{{ .Release.Version }}-nginx
+            items:
+            - key: laravel-site.conf
+              path: laravel-site.conf
       containers:
         - name: {{ .Chart.Name }}-nginx
           image: "{{ .Values.nginxImage.repository }}:{{ .Values.nginxImage.tag }}"
@@ -30,6 +43,12 @@ spec:
               containerPort: {{ .Values.nginxService.internalPort }}
             - name: https
               containerPort: 443
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: laravel-conf
+              mountPath: /etc/nginx/sites-available/
           livenessProbe:
             httpGet:
               path: /

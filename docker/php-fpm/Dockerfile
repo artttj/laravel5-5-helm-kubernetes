@@ -62,7 +62,7 @@ COPY . /var/www/${PROJECT}
 RUN composer dump-autoload --optimize;
 
 #COPY ${DOCKERFILE_DIR}/entrypoint-migrate.sh entrypoint.sh
-COPY ${DOCKERFILE_DIR}/entrypoint-seeder.sh entrypoint.sh
+COPY ${DOCKERFILE_DIR}/entrypoint.sh entrypoint.sh
 
 RUN chmod +x entrypoint.sh
 

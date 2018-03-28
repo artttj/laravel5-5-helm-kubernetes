@@ -5,7 +5,7 @@
 nginxReplicaCount: 1
 phpfpmReplicaCount: 1
 
-preInstallJob: false
+preInstallJob: true
 preUpgradeJob: false
 
 nginxImage:

@@ -13,10 +13,50 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  backoffLimit: 1
-  activeDeadlineSeconds: 1
   template:
-    metadata:
-      name: {{ .Release.Name }}
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: laravel5-env
+          secret:
+            secretName: laravel5-env
+      containers:
+        - name: {{ .Chart.Name }}-phpfpm
+          image: "{{ .Values.phpfpmImage.repository }}:{{ .Values.phpfpmImage.tag }}"
+          imagePullPolicy: {{ .Values.phpfpmImage.pullPolicy }}
+          command: ["/bin/bash", "-c", "php /var/www/laravel5/artisan migrate:fresh --force --seed"]
+          ports:
+            - name: phpfpm
+              containerPort: {{ .Values.phpfpmService.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: laravel5-env
+              mountPath: /var/www/laravel5/.env
+              subPath: .env
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.phpfpmService.port }}
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.phpfpmService.port }}
+            initialDelaySeconds: 40
+            timeoutSeconds: 5
+          resources:
+    {{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+    {{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+    {{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+    {{ toYaml . | indent 8 }}
+    {{- end }}
+
 
 {{- end -}}

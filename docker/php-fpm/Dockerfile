@@ -59,7 +59,7 @@ RUN composer install --no-scripts --no-autoloader
 
 COPY . /var/www/${PROJECT}
 #COPY ${DOCKERFILE_DIR}/entrypoint-migrate.sh entrypoint.sh
-COPY ${DOCKERFILE_DIR}/entrypoint.sh entrypoint.sh
+COPY ${DOCKERFILE_DIR}/entrypoint-no-artisan.sh entrypoint.sh
 
 RUN chmod +x entrypoint.sh
 

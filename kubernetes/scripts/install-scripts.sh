@@ -1,6 +1,8 @@
 namespace=laravel5
+mysql_release_name=mysql
+laravel5_release_name=laravel5
 
-helm install --wait 400 stable/mysql --namespace ${namespace} --name mysql --set mysqlRootPassword=imApMsfoDt,mysqlDatabase=homestead
+helm install stable/mysql --wait --timeout 400 --namespace ${namespace} --set mysqlRootPassword=imApMsfoDt,mysqlDatabase=homestead --name ${mysql_release_name}
 
 kubectl create secret generic --namespace ${namespace} laravel5-env --from-file=/Users/Eamon/PhpstormProjects/laravel5-5-example/.env
 
@@ -17,4 +19,4 @@ helm install --namespace ${namespace} --name laravel5 kubernetes/helm/laravel5 -
 
 kubectl patch deployment --namespace ${namespace} laravel5-phpfpm --patch '{"spec": {"template": {"spec": {"containers": [{"name": "laravel5-phpfpm","image": "quay.io/eamonkeane/laravel:no-artisan"}]}}}}'
 
-helm upgrade --install --wait --timeout 400 --namespace ${namespace} --set phpfpmImage.tag=entrypoint-seeder laravel5 kubernetes/helm/laravel5
+helm upgrade --install --wait --timeout 400 --namespace ${namespace} laravel5 kubernetes/helm/laravel5

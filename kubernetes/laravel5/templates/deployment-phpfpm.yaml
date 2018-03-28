@@ -43,7 +43,7 @@ spec:
           readinessProbe:
             tcpSocket:
               port: {{ .Values.phpfpmService.port }}
-            initialDelaySeconds: 10
+            initialDelaySeconds: 40
             timeoutSeconds: 5
           resources:
 {{ toYaml .Values.resources | indent 12 }}

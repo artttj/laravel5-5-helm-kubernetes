@@ -18,4 +18,5 @@ spec:
   template:
     metadata:
       name: {{ .Release.Name }}
+
 {{- end -}}

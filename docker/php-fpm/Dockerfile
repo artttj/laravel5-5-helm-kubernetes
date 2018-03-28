@@ -58,8 +58,11 @@ WORKDIR /var/www/${PROJECT}
 RUN composer install --no-scripts --no-autoloader
 
 COPY . /var/www/${PROJECT}
+
+RUN composer dump-autoload --optimize;
+
 #COPY ${DOCKERFILE_DIR}/entrypoint-migrate.sh entrypoint.sh
-COPY ${DOCKERFILE_DIR}/entrypoint-no-artisan.sh entrypoint.sh
+COPY ${DOCKERFILE_DIR}/entrypoint-seeder.sh entrypoint.sh
 
 RUN chmod +x entrypoint.sh
 
@@ -72,7 +75,6 @@ RUN chown www-data:www-data /var/www/${PROJECT}/storage/logs/laravel.log
 RUN mkdir -p /var/www/${PROJECT}/storage
 RUN chown -R www-data:www-data /var/www/${PROJECT}/storage
 
-RUN composer dump-autoload --optimize;
 
 EXPOSE 9000
 

@@ -25,7 +25,7 @@ spec:
         - name: {{ .Chart.Name }}-phpfpm
           image: "{{ .Values.phpfpmImage.repository }}:{{ .Values.phpfpmImage.tag }}"
           imagePullPolicy: {{ .Values.phpfpmImage.pullPolicy }}
-          args: ["php artisan migrate --force"]
+          args: ["{{ .Values.preUpgradeCommand.first }}"]
           ports:
             - name: phpfpm
               containerPort: {{ .Values.phpfpmService.port }}

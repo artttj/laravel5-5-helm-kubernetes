@@ -8,7 +8,7 @@ Suggested improvements are welcome as are PRs. There isn't much available online
 This tutorial assumes you have access to a cloud-based cluster with kubernetes v1.9 or higher (e.g. GKE (tested on v1.9.3), ACS-engine or AWS - Google Kubernetes Engine's free trial is the easiest to setup and a 3*N1-Standard-1 is sufficient). A domain URL and ability to change DNS A records is also assumed. Nginx-ingress for tls termination is used.
 Kubectl (`brew install kubectl` >=1.9.3) and helm (`brew install kubernetes-helm` >=2.8.2) is assumed to be installed and pointing at your cluster.
 
-Everything in this tutorial is created in the laravel5 namespace. The namespace can simply be deleted at the end to tidy up. This is a useful approach for a branch-based environment setup.
+Everything in this tutorial is created in the laravel5 namespace. The namespace can be deleted at the end to tidy up. This is a useful approach for a branch-based environment setup.
 
 ## Installation ##
 
@@ -143,9 +143,11 @@ helm upgrade --install --wait --timeout 400 --namespace laravel5 laravel5 kubern
 
 ## Cleaning Up ##
 
-This will delete everything created by the above tutorial but leave everything else in your cluster as it was.
+This will delete everything created by the above tutorial but leave everything else in your cluster as it was. Cert-manager and nginx-ingress create resources outside the namespace so helm is used to delete them.
 
 ```bash
+helm del --purge cert-manager
+helm del --purge nginx-ingress
 kubectl delete namespace laravel5
 ```
 

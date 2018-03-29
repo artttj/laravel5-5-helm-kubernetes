@@ -23,6 +23,10 @@ spec:
         - name: laravel5-env
           secret:
             secretName: laravel5-env
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}-phpfpm
           image: "{{ .Values.phpfpmImage.repository }}:{{ .Values.phpfpmImage.tag }}"

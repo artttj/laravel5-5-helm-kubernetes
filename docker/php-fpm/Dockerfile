@@ -1,16 +1,17 @@
 FROM php:7.2-fpm
 
-#--------------------------------------------------------------------------
-# Software Installation
-#--------------------------------------------------------------------------
-# Installing tools and PHP extentions using "apt", "docker-php", "pecl",
-#
+MAINTAINER Eamon Keane <eamon.keane1@gmail.com>
 
-# Install "curl", "libmemcached-dev", "libpq-dev", "libjpeg-dev",
-#         "libpng-dev", "libfreetype6-dev", "libssl-dev", "libmcrypt-dev",
-
+ARG VCS_REF
+ARG BUILD_DATE
 ARG PROJECT=laravel5
 ARG DOCKERFILE_DIR=docker/php-fpm
+
+# Metadata
+LABEL org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-url="https://github.com/EamonKeane/laravel5-5-example" \
+      org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.docker.dockerfile="/docker/php-fpm/Dockerfile"
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -61,23 +62,21 @@ COPY . /var/www/${PROJECT}
 
 RUN composer dump-autoload --optimize;
 
-#COPY ${DOCKERFILE_DIR}/entrypoint-migrate.sh entrypoint.sh
 COPY ${DOCKERFILE_DIR}/entrypoint.sh entrypoint.sh
 
 RUN chmod +x entrypoint.sh
 
 # Create the Laravel Log file and assign it to www-data:
-RUN mkdir -p /var/www/${PROJECT}/storage/logs
-RUN touch /var/www/${PROJECT}/storage/logs/laravel.log
-RUN chown www-data:www-data /var/www/${PROJECT}/storage/logs/laravel.log
+RUN mkdir -p /var/www/${PROJECT}/storage/logs && \
+    touch /var/www/${PROJECT}/storage/logs/laravel.log && \
+    chown www-data:www-data /var/www/${PROJECT}/storage/logs/laravel.log
 
 #Make storage folder and give access to www-data
-RUN mkdir -p /var/www/${PROJECT}/storage
-RUN chown -R www-data:www-data /var/www/${PROJECT}/storage
+RUN mkdir -p /var/www/${PROJECT}/storage && \
+    chown -R www-data:www-data /var/www/${PROJECT}/storage
 
 EXPOSE 9000
 
 ENTRYPOINT ["./entrypoint.sh"]
 
 CMD ["php-fpm"]
-

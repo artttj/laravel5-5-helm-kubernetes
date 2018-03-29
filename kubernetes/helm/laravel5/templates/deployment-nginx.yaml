@@ -34,6 +34,10 @@ spec:
             items:
             - key: laravel-site.conf
               path: laravel-site.conf
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}-nginx
           image: "{{ .Values.nginxImage.repository }}:{{ .Values.nginxImage.tag }}"

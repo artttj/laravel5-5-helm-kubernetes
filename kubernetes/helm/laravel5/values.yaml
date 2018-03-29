@@ -1,22 +1,28 @@
 # the number of replicas for the nginx service
 nginxReplicaCount: 1
 # the number of replicas for the phpfpm service
-phpfpmReplicaCount: 5
+phpfpmReplicaCount: 3
 
-# Set this to true to run an initial dumping and seeding of database on initial helm install
+#Uncomment to add your image pull secret which has access to both PHP and nginx repositories
+#imagePullSecrets: my-secret-name
+
+# Set this to true to run an initial dumping and seeding of database on initial helm install. This does not seed on upgrades.
 preInstallJob: true
-preInstallCommands:
-# Start artisan in backgrounde mode, then dump database and seed.
-# The .env for the pre-install job is different because it needs to seed local files.
-# The APP_ENV is set to APP_ENV=seeder and the APP_URL is set to: APP_URL=http://localhost:8000
-# which aren't yet available over https at desired url.
+preInstallCommand:
+  # Start artisan in backgrounde mode, then dump database and seed.
+  # The .env for the pre-install job is different because it needs to seed local files without SSL.
+  # The APP_ENV is set to APP_ENV=seeder and the APP_URL is set to: APP_URL=http://localhost:8000
+  # which aren't yet available over https at desired url.
+  # If you change the below commands, please double check the [args] command in kubernetes/helm/laravel5/templates/deployment-phpfpm.yaml still works
+  # Also check that the entrypoint.sh logic still works: docker/php-fpm/entrypoint.sh
   first: "php /var/www/laravel5/artisan serve &"
   second: "php /var/www/laravel5/artisan migrate:fresh --force --seed"
 
 # Set this to true to run an migrations before every upgrade
 preUpgradeJob: true
 preUpgradeCommand:
-# Preform migrations
+  # Preform migrations. If you change the below commands, please double check the [args] command in kubernetes/helm/laravel5/templates/deployment-phpfpm.yaml still works
+  # Also check that the entrypoint.sh logic still works: docker/php-fpm/entrypoint.sh
   first: "php artisan migrate --force"
 
 # The nginx image repository details
@@ -41,7 +47,7 @@ phpfpmImage:
 
 # The phpfpm readiness and liveness values
 phpfpmLivenessProbe:
-  initialDelaySeconds: 10
+  initialDelaySeconds: 40
   timeoutSeconds: 5
 phpfpmReadinessProbe:
   initialDelaySeconds: 60
@@ -62,18 +68,20 @@ phpfpmService:
 ingress:
   enabled: true
   annotations:
+  # This tells the nginx-ingress controller to create an ingress. If you use Google, Amazon's or Azure's change accordingly
      kubernetes.io/ingress.class: nginx
+  # This tells the cert-manager cluster-issuer resource to create a certificate for this ingress
      kubernetes.io/tls-acme: "true"
   path: /
   hosts:
     - laravel2.squareroute.io
-# If enabling ssl please keep in mind the following:
-# The default laravel 5.5 demo project served mixed content (attempting to serve static assets over http), so the following block of code was added to api.php and web.php:
+   # If enabling ssl please keep in mind the following:
+   # The default laravel 5.5 demo project served mixed content (attempting to serve static assets over http), so the following block of code was added to api.php and web.php:
    # if (App::environment('production')) {
    #    URL::forceScheme('https');
    #}
    # https://laracasts.com/discuss/channels/laravel/mixed-content-issue-content-must-be-served-as-https?page=2
-   # If you are looking to enforce SSL for other environments (such as staging) please modify api.php and web.php to forceScheme for those environments
+   # If you are looking to use SSL for other environments (such as staging) please modify api.php and web.php to forceScheme for those environments
   tls:
     - secretName: laravel2.squareroute.io
       hosts:

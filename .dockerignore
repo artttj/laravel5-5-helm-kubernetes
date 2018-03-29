@@ -4,3 +4,8 @@
 /vendor
 composer.lock
 package-lock.json
+.git
+.idea
+node_modules
+vendor
+storage/framework/cache/**

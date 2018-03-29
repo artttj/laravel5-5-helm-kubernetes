@@ -5,9 +5,8 @@
 Suggested improvements are welcome as are PRs. There isn't much available online for laravel + kubernetes together, however this presentation is probably the best material <https://www.slideshare.net/WilliamStewart20/kubernetes-laravel-and-kubernetes> and the following tutorial from Bitnami is useful also <https://docs.bitnami.com/kubernetes/how-to/deploy-php-application-kubernetes-helm/>.
 
 ## Prerequisities ##
-This tutorial assumes you have access to a cloud-based cluster with kubernetes v1.9 or higher (e.g. GKE, ACS-engine or AWS - Google Kubernetes Engine is the easiest to setup). A domain URL and ability to change DNS A records is also assumed. Nginx-ingress for tls termination is used.
+This tutorial assumes you have access to a cloud-based cluster with kubernetes v1.9 or higher (e.g. GKE, ACS-engine or AWS - Google Kubernetes Engine's free trial is the easiest to setup and a 3*N1-Standard-1 is sufficient). A domain URL and ability to change DNS A records is also assumed. Nginx-ingress for tls termination is used.
 Helm (`brew install kubernetes-helm` >v2.8.2) and kubectl (`brew install kubectl` >1.9.3) are assumed to be installed and pointing at your cluster. A common pitfall for new users to helm is Role-Based-Access-Control, so if you're new to helm, you should give helm the required access with `kubectl apply -f kubernetes/kubernetes-yaml/rbac-tiller.yaml` and then use `helm init --service-account tiller`.
-
 
 ## Installation ##
 

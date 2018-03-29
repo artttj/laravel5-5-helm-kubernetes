@@ -1,6 +1,6 @@
 ## Laravel 5-5 example ##
 
-**Laravel 5-5 example** is a tutorial application showing how to run and maintain laravel on kubernetes. It will allow you to quickly get an SSL-enabled wepage with a database and sticky sessions working within 10 minutes which can then be tailored to your requirements.
+**Laravel 5-5 example** is a tutorial application showing how to run and maintain laravel on kubernetes. It will allow you to quickly get an SSL-enabled wepage with a database, automatic seeding, migrations and sticky sessions working within 10 minutes which can then be tailored to your requirements.
 
 Suggested improvements are welcome as are PRs. There isn't much available online for laravel + kubernetes together, however this presentation is probably the best material <https://www.slideshare.net/WilliamStewart20/kubernetes-laravel-and-kubernetes> and the following tutorial from Bitnami is useful also <https://docs.bitnami.com/kubernetes/how-to/deploy-php-application-kubernetes-helm/>.
 

@@ -1,6 +1,6 @@
 ## Laravel 5-5 example ##
 
-**Laravel 5-5 example** is a tutorial application showing how to run and maintain laravel on kubernetes. It will allow you to quickly get a database and SSL-enabled wepage with a database and sticky sessions  working within 10 minutes which can then be tailored to your requirements.
+**Laravel 5-5 example** is a tutorial application showing how to run and maintain laravel on kubernetes. It will allow you to quickly get an SSL-enabled wepage with a database and sticky sessions working within 10 minutes which can then be tailored to your requirements.
 
 Suggested improvements are welcome as are PRs. There isn't much available online for laravel + kubernetes together, however this presentation is probably the best material <https://www.slideshare.net/WilliamStewart20/kubernetes-laravel-and-kubernetes> and the following tutorial from Bitnami is useful also <https://docs.bitnami.com/kubernetes/how-to/deploy-php-application-kubernetes-helm/>.
 
@@ -64,7 +64,7 @@ Server Version: version.Info{Major:"1", Minor:"9+", GitVersion:"v1.9.3-gke.0", G
 MY_URL=laravel2.squareroute.io # change this to your domain
 ```
 
-* Install nginx-ingress with the settings to create RBAC and externalTrafficPolicy to preserve source IPs in the logs. Nginx-ingress is also chosen because it allows for 'sticky sessions', something not yet possible with other Load Balancers to my knowledge <https://blog.shanelee.name/2017/10/16/kubernetes-ingress-and-sticky-sessions/>
+* Install nginx-ingress with the settings to create RBAC and externalTrafficPolicy to preserve source IPs in the logs. Nginx-ingress is also chosen because it allows for 'sticky sessions', something not yet possible with most other Load Balancers to my knowledge <https://blog.shanelee.name/2017/10/16/kubernetes-ingress-and-sticky-sessions/>.
 
 ```bash
 helm install stable/nginx-ingress --name nginx-ingress --namespace laravel5 --set rbac.create=true,controller.service.externalTrafficPolicy=Local
@@ -163,6 +163,6 @@ The helm chart contains the following features which are relevant to laravel:
 
 * Session affinity is preserved using the nginx 'sticky session' which adds a cookie to the header to store the session.
 
-* A second version of the chart is also in the helm folder `laravel5-2-services`. This maintains Nginx and PHP as separate deployments to allow for independetly scaling the number of replicas. This is suitable for deployments with a separate front end which purely speaks to an API and is not dependent on session affinity with php. This happens naturally when the nginx and php containers are in the same pod.
+* A second version of the chart is also in the helm folder `laravel5-2-services`. This maintains Nginx and PHP as separate deployments to allow for independetly scaling the number of replicas. This is suitable for deployments with a separate front end which purely speaks to an API and is not dependent on session affinity with php. This happens naturally when the nginx and php containers are in the same pod and the nginx container maintains sticky sessions.
 
 As mentioned, improvements are welcome.

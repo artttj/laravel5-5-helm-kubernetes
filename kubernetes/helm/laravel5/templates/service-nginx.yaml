@@ -9,6 +9,7 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   type: {{ .Values.nginxService.type }}
+  sessionAffinity: ClientIP
   ports:
     - port: {{ .Values.nginxService.externalPort }}
       targetPort: {{ .Values.nginxService.internalPort }}

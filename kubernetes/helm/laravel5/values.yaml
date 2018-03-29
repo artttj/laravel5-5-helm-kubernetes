@@ -1,7 +1,7 @@
 # the number of replicas for the nginx service
-nginxReplicaCount: 1
+nginxReplicaCount: 5
 # the number of replicas for the phpfpm service
-phpfpmReplicaCount: 3
+phpfpmReplicaCount: 5
 
 #Uncomment to add your image pull secret which has access to both PHP and nginx repositories
 #imagePullSecrets: my-secret-name
@@ -68,10 +68,14 @@ phpfpmService:
 ingress:
   enabled: true
   annotations:
-  # This tells the nginx-ingress controller to create an ingress. If you use Google, Amazon's or Azure's change accordingly
-     kubernetes.io/ingress.class: nginx
-  # This tells the cert-manager cluster-issuer resource to create a certificate for this ingress
-     kubernetes.io/tls-acme: "true"
+    # This tells the nginx-ingress controller to create an ingress. If you use Google, Amazon's or Azure's change accordingly
+    kubernetes.io/ingress.class: "nginx"
+    # This tells the cert-manager cluster-issuer resource to create a certificate for this ingress
+    kubernetes.io/tls-acme: "true"
+    # This ensures that the same backend laravel pod gets the request
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
   path: /
   hosts:
     - laravel2.squareroute.io

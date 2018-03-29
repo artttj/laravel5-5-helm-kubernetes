@@ -29,7 +29,8 @@ Server: &version.Version{SemVer:"v2.8.2", GitCommit:"a80231648a1473929271764b920
 ```bash
 kubectl version
 Client Version: version.Info{Major:"1", Minor:"9", GitVersion:"v1.9.3", GitCommit:"d2835416544f298c919e2ead3be3d0864b52323b", GitTreeState:"clean", BuildDate:"2018-02-09T21:51:54Z", GoVersion:"go1.9.4", Compiler:"gc", Platform:"darwin/amd64"}
-Server Version: version.Info{Major:"1", Minor:"9+", GitVersion:"v1.9.4-gke.1", GitCommit:"10e47a740d0036a4964280bd663c8500da58e3aa", GitTreeState:"clean", BuildDate:"2018-03-13T18:00:36Z", GoVersion:"go1.9.3b4", Compiler:"gc", Platform:"linux/amd64"}
+Server Version: version.Info{Major:"1", Minor:"9+", GitVersion:"v1.9.3-gke.0", GitCommit:"a7b719f7d3463eb5431cf8a3caf5d485827b4210", GitTreeState:"clean", BuildDate:"2018-02-16T18:26:01Z", GoVersion:"go1.9.2b4", Compiler:"gc", Platform:"linux/amd64"}
+
 ```
 
 * Specify your domain:
@@ -41,13 +42,13 @@ MY_URL=laravel2.squareroute.io # change this to your domain
 * If you don't already have nginx-ingress installed on your cluster, install it:
 
 ```bash
-helm install stable/nginx-ingress --name nginx-ingress --namespace laravel5
+helm install stable/nginx-ingress --name nginx-ingress --namespace laravel5 --set rbac.create=true,controller.service.externalTrafficPolicy=Local
 ```
 
 * Add your nginx-ingress IP address as a DNS A record pointing to your laravel URL:
 
 ```bash
-INGRESS_IP=$(kubectl get svc --namespace laravel5 -o json | jq .items[0].status.loadBalancer.ingress[0].ip)
+INGRESS_IP=$(kubectl get svc --namespace laravel5 --selector=app=nginx-ingress,component=controller -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}');echo ${INGRESS_IP}
 ```
 
 * Verify that it has updated
@@ -67,7 +68,7 @@ helm install stable/cert-manager --name cert-manager --namespace laravel5 --set 
 ```
 
 ```bash
-kubectl apply -f kubernetes/helm/cert-manager/acme-prod-cluster-issuer.yaml
+kubectl apply -f kubernetes/kubernetes-yaml/acme-prod-cluster-issuer.yaml
 ```
 
 * Install the mysql database with preconfigured password:
@@ -130,7 +131,7 @@ helm upgrade --install --wait --timeout 400 --namespace laravel5 laravel5 kubern
 This will delete everything created by the above tutorial but leave everything else in your cluster as it was.
 
 ```bash
-`kubectl delete namespace laravel5`
+kubectl delete namespace laravel5
 ```
 
 The helm chart contains the following features which are relevant to laravel:

@@ -1,4 +1,4 @@
 FROM nginx
 ARG PROJECT=laravel5
-#WORKDIR /var/www/${PROJECT}
-COPY public /var/www/${PROJECT}
+WORKDIR /var/www/${PROJECT}/public
+COPY public /var/www/${PROJECT}/public

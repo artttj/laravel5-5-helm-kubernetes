@@ -128,7 +128,7 @@ sed -i '' -e "s#https://laravel2.squareroute.io#https://${MY_URL}#g" kubernetes/
 * Install laravel5. This will seed the mysql database before creating the php containers using a pre-install job.
 
 ```bash
-helm upgrade --install --wait --timeout 400 --namespace laravel5 laravel5 kubernetes/helm/laravel5
+helm upgrade --install --wait --timeout 400 --set ingress.hosts[0]=${MY_URL},ingress.tls[0].hosts[0]=${MY_URL} --namespace laravel5 laravel5 kubernetes/helm/laravel5 --debug --dry-run
 ```
 
 * After approximately 2 minutes the website will be visible at `https://${MY_URL}`
@@ -138,7 +138,7 @@ helm upgrade --install --wait --timeout 400 --namespace laravel5 laravel5 kubern
 For changes to the repository, the same command can be run again. This time it will not perform a database seed, but will only perform the migrations before installing the new pods.
 
 ```bash
-helm upgrade --install --wait --timeout 400 --namespace laravel5 laravel5 kubernetes/helm/laravel5
+helm upgrade --install --wait --timeout 400 --set ingress.hosts[0]=${MY_URL},ingress.tls[0].hosts[0]=${MY_URL} --namespace laravel5 laravel5 kubernetes/helm/laravel5 --debug --dry-run
 ```
 
 ## Cleaning Up ##
@@ -150,6 +150,8 @@ helm del --purge cert-manager
 helm del --purge nginx-ingress
 kubectl delete namespace laravel5
 ```
+
+## Laravel Helm Chart Overview ##
 
 The helm chart contains the following features which are relevant to laravel:
 

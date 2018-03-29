@@ -67,7 +67,7 @@ MY_URL=laravel2.squareroute.io # change this to your domain
 * Install nginx-ingress with the settings to create RBAC and externalTrafficPolicy to preserve source IPs in the logs. Nginx-ingress is also chosen because it allows for 'sticky sessions', something not yet possible with most other Load Balancers to my knowledge <https://blog.shanelee.name/2017/10/16/kubernetes-ingress-and-sticky-sessions/>.
 
 ```bash
-helm install stable/nginx-ingress --name nginx-ingress --namespace laravel5 --set rbac.create=true,controller.service.externalTrafficPolicy=Local
+helm install stable/nginx-ingress --wait --name nginx-ingress --namespace laravel5 --set rbac.create=true,controller.service.externalTrafficPolicy=Local
 ```
 
 * Add your nginx-ingress IP address (this takes circa 2 minutes to populate `watch kubectl get svc --namespace laravel5`) as a DNS A record pointing to your laravel URL:
@@ -122,13 +122,19 @@ docker build . -t ${MY_NGINX_REPO}:latest -f docker/nginx/Dockerfile; docker pus
 * Replace the URL in the .env with your url. Note the .env is kept in the helm folder for convenience to make the secret as part of this tutorial. If using this for production, make the secrets separately using `kubectl create secret generic ${SECRET_NAME} --from-file=${SECRET_FILE}` or use a tool to encrypt the secrets such as helm secrets: <https://github.com/futuresimple/helm-secrets>.
 
 ```bash
-sed -i '' -e "s#https://laravel2.squareroute.io#https://${MY_URL}#g" kubernetes/helm/laravel5/laravel5-env.env
+sed -i '' -e "s#laravel2.squareroute.io#${MY_URL}#g" kubernetes/helm/laravel5/laravel5-env.env
+```
+
+* Replace the ingress host with your url:
+
+```bash
+sed -i '' -e "s#laravel2.squareroute.io#${MY_URL}#g" kubernetes/helm/laravel5/values.yaml
 ```
 
 * Install laravel5. This will seed the mysql database before creating the php containers using a pre-install job.
 
 ```bash
-helm upgrade --install --wait --timeout 400 --set ingress.hosts[0]=${MY_URL},ingress.tls[0].hosts[0]=${MY_URL} --namespace laravel5 laravel5 kubernetes/helm/laravel5 --debug --dry-run
+helm upgrade --install --wait --timeout 400 --set phpfpmImage.repository=${MY_PHP_REPO},nginxImage.repository=${MY_NGINX_REPO} --namespace laravel5 laravel5 kubernetes/helm/laravel5
 ```
 
 * After approximately 2 minutes the website will be visible at `https://${MY_URL}`
@@ -138,7 +144,7 @@ helm upgrade --install --wait --timeout 400 --set ingress.hosts[0]=${MY_URL},ing
 For changes to the repository, the same command can be run again. This time it will not perform a database seed, but will only perform the migrations before installing the new pods.
 
 ```bash
-helm upgrade --install --wait --timeout 400 --set ingress.hosts[0]=${MY_URL},ingress.tls[0].hosts[0]=${MY_URL} --namespace laravel5 laravel5 kubernetes/helm/laravel5 --debug --dry-run
+helm upgrade --install --wait --timeout 400 --set phpfpmImage.repository=${MY_PHP_REPO},nginxImage.repository=${MY_NGINX_REPO} --namespace laravel5 laravel5 kubernetes/helm/laravel5
 ```
 
 ## Cleaning Up ##

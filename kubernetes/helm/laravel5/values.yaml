@@ -83,7 +83,7 @@ ingress:
    # https://laracasts.com/discuss/channels/laravel/mixed-content-issue-content-must-be-served-as-https?page=2
    # If you are looking to use SSL for other environments (such as staging) please modify api.php and web.php to forceScheme for those environments
   tls:
-    - secretName: laravel5-demo
+    - secretName: laravel2.squareroute.io
       hosts:
         - laravel2.squareroute.io
 

@@ -28,7 +28,7 @@ spec:
           args: ["{{ .Values.preUpgradeCommand.first }}"]
           ports:
             - name: phpfpm
-              containerPort: {{ .Values.phpfpmPort }}
+              containerPort: {{ .Values.phpfpmService.port }}
               protocol: TCP
           volumeMounts:
             - name: laravel5-env
@@ -36,12 +36,12 @@ spec:
               subPath: .env
           livenessProbe:
             tcpSocket:
-              port: {{ .Values.phpfpmPort }}
+              port: {{ .Values.phpfpmService.port }}
             initialDelaySeconds: 10
             timeoutSeconds: 5
           readinessProbe:
             tcpSocket:
-              port: {{ .Values.phpfpmPort }}
+              port: {{ .Values.phpfpmService.port }}
             initialDelaySeconds: 40
             timeoutSeconds: 5
           resources:

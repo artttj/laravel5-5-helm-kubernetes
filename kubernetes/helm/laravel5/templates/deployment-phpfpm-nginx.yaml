@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "laravel5.fullname" . }}
+  labels:
+    app: {{ template "laravel5.name" . }}
+    chart: {{ template "laravel5.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "laravel5.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "laravel5.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: {{ template "laravel5.fullname" . }}-{{ .Release.Time.Seconds }}-nginx
+            items:
+            - key: nginx.conf
+              path: nginx.conf
+        - name: laravel-conf
+          configMap:
+            name: {{ template "laravel5.fullname" . }}-{{ .Release.Time.Seconds }}-nginx
+            items:
+            - key: laravel-site.conf
+              path: laravel-site.conf
+        - name: laravel5-env
+          secret:
+            secretName: laravel5-env
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-nginx
+          image: "{{ .Values.nginxImage.repository }}:{{ .Values.nginxImage.tag }}"
+          imagePullPolicy: {{ .Values.nginxImage.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.nginxService.internalPort }}
+            - name: https
+              containerPort: 443
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: laravel-conf
+              mountPath: /etc/nginx/sites-available/
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: {{ .Values.nginxLivenessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.nginxLivenessProbe.timeoutSeconds }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: {{ .Values.nginxReadinessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.nginxReadinessProbe.timeoutSeconds }}
+          resources:
+{{ toYaml .Values.nginxResources | indent 12 }}
+        - name: {{ .Chart.Name }}-phpfpm
+          image: "{{ .Values.phpfpmImage.repository }}:{{ .Values.phpfpmImage.tag }}"
+          imagePullPolicy: {{ .Values.phpfpmImage.pullPolicy }}
+          ports:
+            - name: phpfpm
+              containerPort: {{ .Values.phpfpmPort }}
+              protocol: TCP
+          volumeMounts:
+            - name: laravel5-env
+              mountPath: /var/www/laravel5/.env
+              subPath: .env
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.phpfpmPort }}
+            initialDelaySeconds: {{ .Values.phpfpmLivenessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.phpfpmLivenessProbe.timeoutSeconds }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.phpfpmPort }}
+            initialDelaySeconds: {{ .Values.phpfpmReadinessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.phpfpmReadinessProbe.timeoutSeconds }}
+          resources:
+{{ toYaml .Values.phpfpmResources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

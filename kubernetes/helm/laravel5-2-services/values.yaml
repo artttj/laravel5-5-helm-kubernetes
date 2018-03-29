@@ -1,5 +1,7 @@
-# the number of replicas for the phpfpm-nginx pods
-replicaCount: 5
+# the number of replicas for the nginx service
+nginxReplicaCount: 5
+# the number of replicas for the phpfpm service
+phpfpmReplicaCount: 5
 
 #Uncomment to add your image pull secret which has access to both PHP and nginx repositories
 #imagePullSecrets: my-secret-name
@@ -57,8 +59,10 @@ nginxService:
   externalPort: 80
   internalPort: 80
 
-# The phpfpm port in the pod
-phpfpmPort: 9000
+# The phpfpm service values
+phpfpmService:
+  type: ClusterIP
+  port: 9000
 
 # Ingress details
 ingress:
@@ -68,7 +72,7 @@ ingress:
     kubernetes.io/ingress.class: "nginx"
     # This tells the cert-manager cluster-issuer resource to create a certificate for this ingress
     kubernetes.io/tls-acme: "true"
-    # This ensures that the same backend laravel pod gets the requests during a session. https://github.com/kubernetes/ingress-nginx/tree/master/docs/examples/affinity/cookie
+    # This ensures that the same backend laravel pod gets the request
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/session-cookie-name: "route"
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"

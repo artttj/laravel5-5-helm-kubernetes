@@ -39,7 +39,7 @@ Server Version: version.Info{Major:"1", Minor:"9+", GitVersion:"v1.9.3-gke.0", G
 MY_URL=laravel2.squareroute.io # change this to your domain
 ```
 
-* If you don't already have nginx-ingress installed on your cluster, install it:
+* Install nginx-ingress with the settings to create RBAC and externalTrafficPolicy to preserve source IPs in the logs. Nginx-ingress is also chosen because it allows for 'sticky sessions', something not yet possible with other Load Balancers to my knowledge <https://blog.shanelee.name/2017/10/16/kubernetes-ingress-and-sticky-sessions/>
 
 ```bash
 helm install stable/nginx-ingress --name nginx-ingress --namespace laravel5 --set rbac.create=true,controller.service.externalTrafficPolicy=Local
@@ -146,6 +146,8 @@ The helm chart contains the following features which are relevant to laravel:
 
 * Configmap changes to nginx trigger an upgrade of the nginx deployment
 
-* Nginx and PHP as separate deployments to allow for independetly scaling the number of replicas. It is also possible to have these as multiple containers in the same pod.
+* Session affinity is preserved using the nginx 'sticky session' which adds a cookie to the header to store the session.
+
+* A second version of the chart is also in the helm folder `laravel5-2-services`. This maintains Nginx and PHP as separate deployments to allow for independetly scaling the number of replicas. This is suitable for deployments with a separate front end which purely speaks to an API and is not dependent on session affinity with php. This happens naturally when the nginx and php containers are in the same pod.
 
 As mentioned, improvements are welcome.

@@ -1,10 +1,10 @@
-{{- if .Values.preUpgradeJob -}}
+{{- if .Values.preInstallJob -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{ template "laravel5.fullname" . }}-pre-upgrade-job-{{ .Release.Time.Seconds }}"
+  name: "{{ template "laravel5.fullname" . }}-pre-install-job-{{ .Release.Time.Seconds }}"
   annotations:
-    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "-5"
     "helm.sh/hook-delete-policy": hook-succeeded
   labels:
@@ -18,31 +18,32 @@ spec:
     spec:
       restartPolicy: Never
       volumes:
-        - name: laravel5-env
+        - name: laravel5-env-seeder
           secret:
-            secretName: laravel5-env
+            secretName: laravel5-env-seeder
       containers:
         - name: {{ .Chart.Name }}-phpfpm
           image: "{{ .Values.phpfpmImage.repository }}:{{ .Values.phpfpmImage.tag }}"
           imagePullPolicy: {{ .Values.phpfpmImage.pullPolicy }}
-          args: ["{{ .Values.preUpgradeCommand.first }}"]
+          args: ["{{ .Values.preInstallCommand.first }}",
+                "{{ .Values.preInstallCommand.second }}"]
           ports:
             - name: phpfpm
-              containerPort: {{ .Values.phpfpmPort }}
+              containerPort: {{ .Values.phpfpmService.port }}
               protocol: TCP
           volumeMounts:
-            - name: laravel5-env
+            - name: laravel5-env-seeder
               mountPath: /var/www/laravel5/.env
               subPath: .env
           livenessProbe:
             tcpSocket:
-              port: {{ .Values.phpfpmPort }}
+              port: {{ .Values.phpfpmService.port }}
             initialDelaySeconds: 10
             timeoutSeconds: 5
           readinessProbe:
             tcpSocket:
-              port: {{ .Values.phpfpmPort }}
-            initialDelaySeconds: 40
+              port: {{ .Values.phpfpmService.port }}
+            initialDelaySeconds: 300
             timeoutSeconds: 5
           resources:
     {{ toYaml .Values.resources | indent 12 }}

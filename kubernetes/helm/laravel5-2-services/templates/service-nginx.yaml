@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ template "laravel5.fullname" . }}-nginx
   labels:
-    app: {{ template "laravel5.name" . }}
+    app: {{ template "laravel5.name" . }}-nginx
     chart: {{ template "laravel5.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -16,5 +16,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: {{ template "laravel5.name" . }}
+    app: {{ template "laravel5.name" . }}-nginx
     release: {{ .Release.Name }}

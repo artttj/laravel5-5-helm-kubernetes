@@ -29,7 +29,7 @@ spec:
                 "{{ .Values.preInstallCommand.second }}"]
           ports:
             - name: phpfpm
-              containerPort: {{ .Values.phpfpmService.port }}
+              containerPort: {{ .Values.phpfpmPort }}
               protocol: TCP
           volumeMounts:
             - name: laravel5-env-seeder
@@ -37,12 +37,12 @@ spec:
               subPath: .env
           livenessProbe:
             tcpSocket:
-              port: {{ .Values.phpfpmService.port }}
+              port: {{ .Values.phpfpmPort }}
             initialDelaySeconds: 10
             timeoutSeconds: 5
           readinessProbe:
             tcpSocket:
-              port: {{ .Values.phpfpmService.port }}
+              port: {{ .Values.phpfpmPort }}
             initialDelaySeconds: 300
             timeoutSeconds: 5
           resources:

@@ -13,7 +13,7 @@ Everything in this tutorial is created in the laravel5 namespace. The namespace 
 ## Installation ##
 
 ```bash
-git clone https://github.com/EamonKeane/larvel5-5-example
+git clone https://github.com/EamonKeane/larvel5-5-example.git
 ```
 
 ```bash

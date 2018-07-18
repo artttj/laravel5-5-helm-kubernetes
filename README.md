@@ -89,7 +89,7 @@ laravel2.squareroute.io. 5      IN      A       35.230.155.177
 Install Cert-Manager for automatic SSL provisioning. <https://github.com/kubernetes/charts/tree/master/stable/cert-manager>
 
 ```bash
-helm install stable/cert-manager --name cert-manager --namespace laravel5 --set ingressShim.extraArgs='{--default-issuer-name=letsencrypt-prod,--default-issuer-kind=ClusterIssuer}','extraArgs={--v=4}'
+helm install stable/cert-manager --version 0.2.10 --name cert-manager --namespace laravel5 --set ingressShim.extraArgs='{--default-issuer-name=letsencrypt-prod,--default-issuer-kind=ClusterIssuer}','extraArgs={--v=4}'
 ```
 
 ```bash
